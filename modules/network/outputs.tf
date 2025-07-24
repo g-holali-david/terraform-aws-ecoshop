@@ -1,19 +1,29 @@
 output "vpc_id" {
-  value       = aws_vpc.main.id
-  description = "The ID of the created VPC"
+  value = aws_vpc.ecosop.id
 }
 
-output "public_subnet_ids" {
-  value       = aws_subnet.public[*].id
-  description = "IDs of the public subnets"
+output "web_subnets" {
+  value = aws_subnet.web_public[*].id
 }
 
-output "private_app_subnet_ids" {
-  value       = aws_subnet.private_app[*].id
-  description = "IDs of the private subnets for app tier"
+output "app_subnets" {
+  value = aws_subnet.app_private[*].id
 }
 
-output "private_db_subnet_ids" {
-  value       = aws_subnet.private_db[*].id
-  description = "IDs of the private subnets for DB tier"
+output "db_subnets" {
+  value = aws_subnet.db_private[*].id
+}
+
+output "azs" {
+  value = var.azs
+}
+
+output "public_subnets" {
+  description = "Liste des subnets publics pour le Bastion et ALB"
+  value       = aws_subnet.web_public[*].id
+}
+
+output "private_app_subnets" {
+  description = "Liste des subnets privés pour les serveurs applicatifs"
+  value       = aws_subnet.app_private[*].id
 }

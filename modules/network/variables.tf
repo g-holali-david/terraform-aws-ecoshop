@@ -1,35 +1,24 @@
-// CIDR block for the VPC
 variable "vpc_cidr" {
-  type        = string
-  description = "CIDR block for the main VPC"
+  type    = string
+  default = "10.0.0.0/16"
 }
 
-// Name for the VPC
-variable "vpc_name" {
-  type        = string
-  description = "Name tag for the VPC"
-}
-
-// Availability Zones to use
 variable "azs" {
-  type        = list(string)
-  description = "List of Availability Zones to use"
+  type    = list(string)
+  default = ["eu-west-1a", "eu-west-1b"]
 }
 
-// CIDRs for the public subnets (must match number of AZs)
-variable "public_subnet_cidrs" {
-  type        = list(string)
-  description = "List of CIDR blocks for public subnets"
+variable "web_subnet_cidrs" {
+  type = list(string)
+  default = ["10.0.1.0/24", "10.0.2.0/24"]
 }
 
-// CIDRs for the private subnets (application tier)
-variable "private_app_subnet_cidrs" {
-  type        = list(string)
-  description = "List of CIDR blocks for private subnets (app tier)"
+variable "app_subnet_cidrs" {
+  type = list(string)
+  default = ["10.0.10.0/24", "10.0.20.0/24"]
 }
 
-// CIDRs for the private subnets (database tier)
-variable "private_db_subnet_cidrs" {
-  type        = list(string)
-  description = "List of CIDR blocks for private subnets (db tier)"
+variable "db_subnet_cidrs" {
+  type = list(string)
+  default = ["10.0.100.0/24", "10.0.200.0/24"]
 }

@@ -1,66 +1,63 @@
-# ------------------------------------------------------------
-# Root Terraform Configuration for EcoShop AWS Infrastructure
-# This file orchestrates the different modules (network, security, compute, rds, alb)
-# ------------------------------------------------------------
-
 provider "aws" {
-  region = var.aws_region
+  region = "eu-west-1"
 }
 
-# -------------------------------
-# Network Module (VPC, Subnets)
-# -------------------------------
+resource "tls_private_key" "ecoshop" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "aws_key_pair" "ecoshop_key" {
+  key_name   = "ecoshop-key"
+  public_key = tls_private_key.ecoshop.public_key_openssh
+
+  lifecycle {
+    ignore_changes = [public_key]
+  }
+}
+
 module "network" {
   source = "./modules/network"
 
-  vpc_cidr = var.vpc_cidr
-  azs      = var.azs
+  vpc_cidr         = var.vpc_cidr
+  azs              = var.azs
+  web_subnet_cidrs = var.web_subnet_cidrs
+  app_subnet_cidrs = var.app_subnet_cidrs
+  db_subnet_cidrs  = var.db_subnet_cidrs
 }
 
-# -------------------------------
-# Security Groups
-# -------------------------------
 module "security" {
-  source = "./modules/security"
-
-  vpc_id        = module.network.vpc_id
-  bastion_cidr  = var.bastion_cidr
+  source   = "./modules/security"
+  vpc_id   = module.network.vpc_id
+  admin_ip = var.admin_ip
 }
 
-# -------------------------------
-# Compute (EC2 Web/App + Bastion)
-# -------------------------------
 module "compute" {
   source = "./modules/compute"
 
-  vpc_id              = module.network.vpc_id
-  private_subnet_ids  = module.network.private_app_subnet_ids
-  sg_app_id           = module.security.sg_app_id
-  sg_bastion_id       = module.security.sg_bastion_id
-  ami_id              = var.ami_id
-  instance_key_name   = var.instance_key_name
+  key_name           = aws_key_pair.ecoshop_key.key_name
+  bastion_ami        = var.bastion_ami
+  bastion_subnet_id  = module.network.public_subnets[0]
+  sg_bastion_id      = module.security.sg_bastion_id
+
+  app_ami            = var.app_ami
+  app_subnet_ids     = module.network.private_app_subnets
+  sg_app_id          = module.security.sg_app_id
 }
 
-# -------------------------------
-# RDS MySQL Database
-# -------------------------------
 module "rds" {
   source = "./modules/rds"
 
-  db_subnet_ids = module.network.private_db_subnet_ids
+  db_subnet_ids = module.network.db_subnets
   vpc_id        = module.network.vpc_id
   sg_db_id      = module.security.sg_db_id
-  db_username   = var.db_username
-  db_password   = var.db_password
 }
 
-# -------------------------------
-# Application Load Balancer
-# -------------------------------
-module "alb" {
-  source = "./modules/alb"
 
-  vpc_id            = module.network.vpc_id
-  public_subnet_ids = module.network.public_subnet_ids
-  sg_web_id         = module.security.sg_web_id
+module "alb" {
+  source              = "./modules/alb"
+  web_subnet_ids      = module.network.web_subnets
+  vpc_id              = module.network.vpc_id
+  target_instance_ids = module.compute.app_instance_ids 
+  sg_web_id           = module.security.sg_web_id
 }

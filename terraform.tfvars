@@ -1,42 +1,17 @@
-# Project and general tags
-project_name        = "ecoshop"
-environment         = "prod"
-region              = "eu-west-3" # Paris (France)
-availability_zones  = ["eu-west-3a", "eu-west-3b"]
+vpc_cidr           = "10.0.0.0/16"
+azs                = ["eu-west-1a", "eu-west-1b"]
 
-# VPC settings
-vpc_cidr            = "10.0.0.0/16"
-vpc_name            = "ecoshop-vpc"
+web_subnet_cidrs   = ["10.0.1.0/24", "10.0.2.0/24"]
+app_subnet_cidrs   = ["10.0.10.0/24", "10.0.20.0/24"]
+db_subnet_cidrs    = ["10.0.100.0/24", "10.0.200.0/24"]
 
-# Public Subnets (Web tier)
-public_subnet_cidrs = ["10.0.1.0/24", "10.0.2.0/24"]
+admin_ip = "92.92.126.125/32"
+key_name           = "ecoshop-key"
 
-# Private Subnets (App tier)
-private_app_subnet_cidrs = ["10.0.10.0/24", "10.0.20.0/24"]
+# Amazon Linux 2 AMI (HVM), SSD Volume Type pour eu-west-1 (Irlande) - validée le 24 juillet 2025
 
-# Private Subnets (DB tier)
-private_db_subnet_cidrs = ["10.0.100.0/24", "10.0.200.0/24"]
+bastion_ami = "ami-0ca351c241d836d3b"
+app_ami     = "ami-0ca351c241d836d3b"
 
-# NAT Gateway
-enable_nat_gateway = true
-
-# Bastion Host
 bastion_instance_type = "t3.micro"
-bastion_ami_id        = "ami-0c1c30571d2dae5c9" # Amazon Linux 2 (Paris)
-bastion_key_name      = "ecoshop-key"
-
-# Web/App Servers
-app_instance_count    = 2
 app_instance_type     = "t3.small"
-app_ami_id            = "ami-0c1c30571d2dae5c9" # Amazon Linux 2 (Paris)
-
-# RDS Configuration
-rds_db_name           = "ecoshop"
-rds_username          = "admin"
-rds_password          = "EcoShop2024!"
-rds_instance_class    = "db.t3.micro"
-rds_storage_gb        = 20
-rds_multi_az          = true
-
-# Load Balancer
-alb_name              = "ecoshop-alb"

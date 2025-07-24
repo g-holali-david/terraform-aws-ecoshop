@@ -1,12 +1,9 @@
-# This module defines the security groups required for the 3-tier architecture.
-
 resource "aws_security_group" "sg_web" {
-  name        = "sg-web"
-  description = "Allow HTTP/HTTPS from the Internet"
+  name        = "SG-Web"
+  description = "Allow HTTP/HTTPS from internet"
   vpc_id      = var.vpc_id
 
   ingress {
-    description = "Allow HTTP"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
@@ -14,7 +11,6 @@ resource "aws_security_group" "sg_web" {
   }
 
   ingress {
-    description = "Allow HTTPS"
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
@@ -28,18 +24,15 @@ resource "aws_security_group" "sg_web" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = {
-    Name = "sg-web"
-  }
+  tags = { Name = "SG-Web" }
 }
 
 resource "aws_security_group" "sg_app" {
-  name        = "sg-app"
-  description = "Allow traffic from web tier and SSH from bastion"
+  name        = "SG-App"
+  description = "Allow traffic from Web SG, SSH from Bastion"
   vpc_id      = var.vpc_id
 
   ingress {
-    description     = "Allow HTTP from web tier"
     from_port       = 8080
     to_port         = 8080
     protocol        = "tcp"
@@ -47,7 +40,6 @@ resource "aws_security_group" "sg_app" {
   }
 
   ingress {
-    description     = "Allow SSH from bastion"
     from_port       = 22
     to_port         = 22
     protocol        = "tcp"
@@ -61,18 +53,15 @@ resource "aws_security_group" "sg_app" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = {
-    Name = "sg-app"
-  }
+  tags = { Name = "SG-App" }
 }
 
 resource "aws_security_group" "sg_db" {
-  name        = "sg-db"
-  description = "Allow MySQL from app tier"
+  name        = "SG-DB"
+  description = "Allow MySQL from App SG"
   vpc_id      = var.vpc_id
 
   ingress {
-    description     = "Allow MySQL from app tier"
     from_port       = 3306
     to_port         = 3306
     protocol        = "tcp"
@@ -86,22 +75,19 @@ resource "aws_security_group" "sg_db" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = {
-    Name = "sg-db"
-  }
+  tags = { Name = "SG-DB" }
 }
 
 resource "aws_security_group" "sg_bastion" {
-  name        = "sg-bastion"
-  description = "Allow SSH from your IP only"
+  name        = "SG-Bastion"
+  description = "SSH access from your IP"
   vpc_id      = var.vpc_id
 
   ingress {
-    description = "Allow SSH from my IP"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = [var.my_ip]
+    cidr_blocks = [var.admin_ip]
   }
 
   egress {
@@ -111,7 +97,5 @@ resource "aws_security_group" "sg_bastion" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = {
-    Name = "sg-bastion"
-  }
+  tags = { Name = "SG-Bastion" }
 }

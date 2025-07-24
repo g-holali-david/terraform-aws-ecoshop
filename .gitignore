@@ -1,0 +1,30 @@
+# répertoire local Terraform
+.terraform/
+
+# fichiers d’état Terraform (contenant les ressources réelles)
+*.tfstate
+*.tfstate.backup
+
+# fichiers sensibles (variables secrètes, clés SSH, etc.)
+*.tfvars
+*.pem
+*.key
+*.crt
+*.zip
+
+# fichiers logs éventuels
+*.log
+
+# fichiers de verrouillage (selon ton usage)
+.terraform.lock.hcl
+
+# fichiers d’édition temporaire
+*.swp
+*.bak
+*~
+.DS_Store
+Thumbs.db
+
+# fichiers spécifiques à VS Code ou autres IDE
+.vscode/
+.idea/

@@ -1,21 +1,25 @@
-# Outputs for security groups
-
 output "sg_web_id" {
-  description = "ID of the Web security group"
-  value       = aws_security_group.sg_web.id
+  value = aws_security_group.sg_web.id
 }
 
 output "sg_app_id" {
-  description = "ID of the Application security group"
-  value       = aws_security_group.sg_app.id
+  value = aws_security_group.sg_app.id
 }
 
 output "sg_db_id" {
-  description = "ID of the Database security group"
-  value       = aws_security_group.sg_db.id
+  value = aws_security_group.sg_db.id
 }
 
 output "sg_bastion_id" {
-  description = "ID of the Bastion Host security group"
+  value = aws_security_group.sg_bastion.id
+}
+
+output "sg_bastion" {
+  description = "Security Group ID du Bastion"
   value       = aws_security_group.sg_bastion.id
+}
+
+output "sg_app" {
+  description = "Security Group ID des serveurs applicatifs"
+  value       = aws_security_group.sg_app.id
 }

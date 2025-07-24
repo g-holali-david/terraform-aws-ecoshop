@@ -1,16 +1,19 @@
-# Input variables for the ALB module
-
-variable "public_subnet_ids" {
-  description = "List of public subnet IDs where the ALB will be deployed"
-  type        = list(string)
-}
-
 variable "vpc_id" {
-  description = "ID of the VPC where the ALB and target group will be created"
   type        = string
+  description = "ID du VPC"
 }
 
 variable "sg_web_id" {
-  description = "Security Group ID for the ALB"
   type        = string
+  description = "Security Group pour le ALB"
+}
+
+variable "web_subnet_ids" {
+  type        = list(string)
+  description = "Subnets publics pour le ALB"
+}
+
+variable "target_instance_ids" {
+  type        = list(string)
+  description = "Liste des IDs des serveurs app à attacher"
 }

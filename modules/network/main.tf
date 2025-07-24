@@ -1,107 +1,65 @@
-// Create the main VPC
-resource "aws_vpc" "main" {
+resource "aws_vpc" "ecosop" {
   cidr_block           = var.vpc_cidr
-  enable_dns_support   = true
   enable_dns_hostnames = true
-  tags = {
-    Name = var.vpc_name
-  }
+  enable_dns_support   = true
+  tags = { Name = "ecosop-vpc" }
 }
 
-// Create public subnets (2 AZs)
-resource "aws_subnet" "public" {
-  count                   = length(var.public_subnet_cidrs)
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = var.public_subnet_cidrs[count.index]
-  availability_zone       = element(var.azs, count.index)
+resource "aws_subnet" "web_public" {
+  count                = 2
+  vpc_id               = aws_vpc.ecosop.id
+  cidr_block           = var.web_subnet_cidrs[count.index]
+  availability_zone    = var.azs[count.index]
   map_public_ip_on_launch = true
-  tags = {
-    Name = "public-subnet-${count.index + 1}"
-  }
+  tags = { Name = "web-public-${var.azs[count.index]}" }
 }
 
-// Create private subnets for Application tier (2 AZs)
-resource "aws_subnet" "private_app" {
-  count             = length(var.private_app_subnet_cidrs)
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = var.private_app_subnet_cidrs[count.index]
-  availability_zone = element(var.azs, count.index)
-  tags = {
-    Name = "private-app-subnet-${count.index + 1}"
-  }
+resource "aws_subnet" "app_private" {
+  count             = 2
+  vpc_id            = aws_vpc.ecosop.id
+  cidr_block        = var.app_subnet_cidrs[count.index]
+  availability_zone = var.azs[count.index]
+  tags = { Name = "app-private-${var.azs[count.index]}" }
 }
 
-// Create private subnets for Database tier (2 AZs)
-resource "aws_subnet" "private_db" {
-  count             = length(var.private_db_subnet_cidrs)
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = var.private_db_subnet_cidrs[count.index]
-  availability_zone = element(var.azs, count.index)
-  tags = {
-    Name = "private-db-subnet-${count.index + 1}"
-  }
+resource "aws_subnet" "db_private" {
+  count             = 2
+  vpc_id            = aws_vpc.ecosop.id
+  cidr_block        = var.db_subnet_cidrs[count.index]
+  availability_zone = var.azs[count.index]
+  tags = { Name = "db-private-${var.azs[count.index]}" }
 }
 
-// Create an Internet Gateway
 resource "aws_internet_gateway" "igw" {
-  vpc_id = aws_vpc.main.id
-  tags = {
-    Name = "internet-gateway"
-  }
+  vpc_id = aws_vpc.ecosop.id
+  tags = { Name = "ecosop-igw" }
 }
 
-// Create a NAT Gateway (one per AZ, using first public subnet for simplicity)
 resource "aws_eip" "nat" {
-  count = 1
-  vpc   = true
+  tags = { Name = "ecosop-eip-nat" }
 }
+
 
 resource "aws_nat_gateway" "nat" {
-  allocation_id = aws_eip.nat[0].id
-  subnet_id     = aws_subnet.public[0].id
-  tags = {
-    Name = "nat-gateway"
-  }
+  allocation_id = aws_eip.nat.id
+  subnet_id     = aws_subnet.web_public[0].id
+  tags = { Name = "ecosop-nat" }
 }
 
-// Create route table for public subnets
-resource "aws_route_table" "public" {
-  vpc_id = aws_vpc.main.id
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.igw.id
-  }
-  tags = {
-    Name = "public-route-table"
-  }
+resource "aws_route_table" "public_rt" {
+  vpc_id = aws_vpc.ecosop.id
+  tags   = { Name = "public-rt" }
 }
 
-resource "aws_route_table_association" "public" {
-  count          = length(aws_subnet.public)
-  subnet_id      = aws_subnet.public[count.index].id
-  route_table_id = aws_route_table.public.id
+resource "aws_route" "public_internet" {
+  route_table_id         = aws_route_table.public_rt.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.igw.id
 }
 
-// Create route table for private subnets
-resource "aws_route_table" "private" {
-  vpc_id = aws_vpc.main.id
-  route {
-    cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.nat.id
-  }
-  tags = {
-    Name = "private-route-table"
-  }
+resource "aws_route_table_association" "web_subnet_assoc" {
+  count          = 2
+  subnet_id      = aws_subnet.web_public[count.index].id
+  route_table_id = aws_route_table.public_rt.id
 }
 
-resource "aws_route_table_association" "private_app" {
-  count          = length(aws_subnet.private_app)
-  subnet_id      = aws_subnet.private_app[count.index].id
-  route_table_id = aws_route_table.private.id
-}
-
-resource "aws_route_table_association" "private_db" {
-  count          = length(aws_subnet.private_db)
-  subnet_id      = aws_subnet.private_db[count.index].id
-  route_table_id = aws_route_table.private.id
-}
