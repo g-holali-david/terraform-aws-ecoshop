@@ -10,8 +10,8 @@ key_name           = "ecoshop-key"
 
 # Amazon Linux 2 AMI (HVM), SSD Volume Type pour eu-west-1 (Irlande) - validée le 24 juillet 2025
 
-bastion_ami = "ami-0ca351c241d836d3b"
-app_ami     = "ami-0ca351c241d836d3b"
+bastion_ami = "ami-0214c80a20a6f5239" 
+app_ami     = "ami-0214c80a20a6f5239" 
 
 bastion_instance_type = "t3.micro"
 app_instance_type     = "t3.small"

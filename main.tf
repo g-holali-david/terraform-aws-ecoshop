@@ -43,6 +43,7 @@ module "compute" {
   app_ami            = var.app_ami
   app_subnet_ids     = module.network.private_app_subnets
   sg_app_id          = module.security.sg_app_id
+  depends_on         = [module.network]
 }
 
 module "rds" {

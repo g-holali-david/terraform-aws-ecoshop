@@ -63,3 +63,30 @@ resource "aws_route_table_association" "web_subnet_assoc" {
   route_table_id = aws_route_table.public_rt.id
 }
 
+
+resource "aws_route_table" "private_rt" {
+  vpc_id = aws_vpc.ecosop.id
+  tags   = { Name = "private-rt" }
+
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.nat.id
+  }
+}
+
+
+# Associer les subnets privés d'application à la table de routage privée
+resource "aws_route_table_association" "app_private_assoc" {
+  count          = length(aws_subnet.app_private)
+  subnet_id      = aws_subnet.app_private[count.index].id
+  route_table_id = aws_route_table.private_rt.id
+}
+
+# Associer les subnets privés de base de données à la table de routage privée
+resource "aws_route_table_association" "db_private_assoc" {
+  count          = length(aws_subnet.db_private)
+  subnet_id      = aws_subnet.db_private[count.index].id
+  route_table_id = aws_route_table.private_rt.id
+}
+
+
