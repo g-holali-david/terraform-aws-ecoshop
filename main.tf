@@ -49,6 +49,9 @@ module "compute" {
 module "rds" {
   source = "./modules/rds"
 
+  db_username = var.db_username
+  db_password = var.db_password
+
   db_subnet_ids = module.network.db_subnets
   vpc_id        = module.network.vpc_id
   sg_db_id      = module.security.sg_db_id

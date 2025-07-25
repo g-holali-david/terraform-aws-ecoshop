@@ -5,7 +5,7 @@ web_subnet_cidrs   = ["10.0.1.0/24", "10.0.2.0/24"]
 app_subnet_cidrs   = ["10.0.10.0/24", "10.0.20.0/24"]
 db_subnet_cidrs    = ["10.0.100.0/24", "10.0.200.0/24"]
 
-admin_ip = "92.92.126.125/32"
+admin_ip = "92.92.127.210/32"
 key_name           = "ecoshop-key"
 
 # Amazon Linux 2 AMI (HVM), SSD Volume Type pour eu-west-1 (Irlande) - validée le 24 juillet 2025

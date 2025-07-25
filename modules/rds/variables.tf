@@ -14,13 +14,12 @@ variable "sg_db_id" {
 }
 
 variable "db_username" {
+  description = "Nom d'utilisateur pour la base de données RDS"
   type        = string
-  default     = "admin"
-  description = "Nom d'utilisateur pour la base"
 }
 
 variable "db_password" {
+  description = "Mot de passe de la base de données RDS"
   type        = string
-  default     = "EcoShop2024!"
-  description = "Mot de passe sécurisé"
+  sensitive   = true
 }

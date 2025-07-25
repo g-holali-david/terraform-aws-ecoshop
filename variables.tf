@@ -55,3 +55,18 @@ variable "app_instance_type" {
   type        = string
   default     = "t3.small"
 }
+
+
+variable "db_username" {
+  description = "Nom d'utilisateur principal pour la base de données"
+  type        = string
+  default     = "admin"
+}
+
+variable "db_password" {
+  description = "Mot de passe de l'utilisateur principal de la base de données"
+  type        = string
+  sensitive   = true
+  default     = "EcoShop2025!"
+}
+
