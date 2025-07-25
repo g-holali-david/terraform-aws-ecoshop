@@ -24,12 +24,14 @@ resource "aws_security_group" "sg_web" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = { Name = "SG-Web" }
+  tags = {
+    Name = "SG-Web"
+  }
 }
 
 resource "aws_security_group" "sg_app" {
   name        = "SG-App"
-  description = "Allow traffic from Web SG, SSH from Bastion"
+  description = "Allow traffic from Web SG, SSH from Bastion, ICMP from VPC"
   vpc_id      = var.vpc_id
 
   ingress {
@@ -46,6 +48,14 @@ resource "aws_security_group" "sg_app" {
     security_groups = [aws_security_group.sg_bastion.id]
   }
 
+  ingress {
+    from_port   = -1
+    to_port     = -1
+    protocol    = "icmp"
+    cidr_blocks = ["10.0.0.0/16"]
+    description = "Allow ICMP (ping) from inside VPC"
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -53,7 +63,9 @@ resource "aws_security_group" "sg_app" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = { Name = "SG-App" }
+  tags = {
+    Name = "SG-App"
+  }
 }
 
 resource "aws_security_group" "sg_db" {
@@ -75,7 +87,9 @@ resource "aws_security_group" "sg_db" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = { Name = "SG-DB" }
+  tags = {
+    Name = "SG-DB"
+  }
 }
 
 resource "aws_security_group" "sg_bastion" {
@@ -97,5 +111,7 @@ resource "aws_security_group" "sg_bastion" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = { Name = "SG-Bastion" }
+  tags = {
+    Name = "SG-Bastion"
+  }
 }
