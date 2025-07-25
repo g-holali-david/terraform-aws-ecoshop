@@ -5,7 +5,9 @@ resource "aws_instance" "bastion" {
   vpc_security_group_ids = [var.sg_bastion_id]
   key_name               = var.key_name
 
-  tags = { Name = "BastionHost" }
+  tags = {
+    Name = "BastionHost"
+  }
 }
 
 resource "aws_instance" "app_servers" {
@@ -16,8 +18,7 @@ resource "aws_instance" "app_servers" {
   vpc_security_group_ids = [var.sg_app_id]
   key_name               = var.key_name
 
-
-user_data = <<-EOF
+  user_data = <<-EOF
               #!/bin/bash
 
               # Attendre que le réseau soit prêt
@@ -39,5 +40,8 @@ user_data = <<-EOF
               # Créer un fichier d'accueil PHP
               echo "<?php echo 'Bienvenue sur EcoShop - serveur : ' . gethostname(); ?>" > /var/www/html/index.php
               EOF
-  tags = { Name = "AppServer-${count.index + 1}" }
+
+  tags = {
+    Name = "AppServer-${count.index + 1}"
+  }
 }
